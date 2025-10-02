@@ -49,7 +49,8 @@ app.get("/read", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get("/watch", async (req: Request, res: Response, next: NextFunction) => {
-  cron.schedule("*/1 * * * *", async () => {
+  // Schedule the task to run every hour
+  cron.schedule("0 * * * *", async () => {
     console.log("Running the scheduled task to save data...");
     await saveData();
     console.log("Data saved successfully.");
