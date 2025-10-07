@@ -29,7 +29,6 @@
     "express-rate-limit": "^6.10.0",
     "fs": "^0.0.1-security",
     "mongoose": "^7.4.1",
-    "mongoose-history-diff": "^1.0.6",
     "node-cron": "^4.2.1",
     "puppeteer": "^24.22.0",
     "ts-node-dev": "^2.0.0",

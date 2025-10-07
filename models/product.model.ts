@@ -1,5 +1,4 @@
 import mongoose, { Model, Schema } from "mongoose";
-import DiffPlugin from "mongoose-history-diff";
 import { IProduct } from "../lib/interfaces";
 
 const ProductSchema: Schema<IProduct> = new mongoose.Schema(
@@ -83,8 +82,6 @@ const ProductSchema: Schema<IProduct> = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-ProductSchema.plugin(DiffPlugin);
 
 const ProductModel: Model<IProduct> = mongoose.model(
   "Product",
