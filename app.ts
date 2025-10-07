@@ -6,9 +6,14 @@ import cron from "node-cron";
 import { rateLimit } from "express-rate-limit";
 import connectDB from "./utils/db";
 import saveData from "./utils/watcher";
+import { getAllProducts } from "./controllers/products.controller";
 export const app = express();
 // cookie parser
 app.use(cookieParser());
+
+// serve static files
+app.use('/dashboard', express.static('public'));
+
 
 /*****cors error protection and data parsing*****/
 
@@ -23,8 +28,6 @@ app.use(
   })
 );
 
-
-
 // api requests limit
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -34,6 +37,9 @@ const limiter = rateLimit({
 });
 
 
+// middleware calls
+app.use(limiter);
+
 // testing api
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
@@ -42,15 +48,12 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get("/read", async (req: Request, res: Response, next: NextFunction) => {
-  await saveData();
-  res.status(200).json({
-    message: "Sols data read successfully🙂"
-  });
+  return getAllProducts(req, res, next);
 });
 
 app.get("/watch", async (req: Request, res: Response, next: NextFunction) => {
-  // Schedule the task to run every hour
-  cron.schedule("0 * * * *", async () => {
+  // Schedule the task to run every 6 hours
+  cron.schedule("0 */6 * * *", async () => {
     console.log("Running the scheduled task to save data...");
     await saveData();
     console.log("Data saved successfully.");
@@ -66,8 +69,5 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 404;
   next(err);
 });
-
-// middleware calls
-app.use(limiter);
 
 export default () => connectDB().then(() => app);

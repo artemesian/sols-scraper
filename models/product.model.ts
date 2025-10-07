@@ -44,8 +44,42 @@ const ProductSchema: Schema<IProduct> = new mongoose.Schema(
                 }
             ]
         }
-    ]
-
+    ],
+    history: [
+        {
+            date: {
+                type: Date,
+                required: true,
+                default: Date.now
+            },
+            inventory: [ 
+                {
+                    color: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        required: true,
+                        ref: "Color"
+                    },
+                    sizes: [
+                        {
+                            size: {
+                                type: mongoose.Schema.Types.ObjectId,
+                                required: true,
+                                ref: "Size"
+                            },
+                            quantityAvailable: {
+                                type: Number,
+                                required: false
+                            },
+                            price: {
+                                type: Number,
+                                required: false
+                            }
+                        }
+                    ]
+                }
+            ],   
+        },
+    ],
   },
   { timestamps: true }
 );

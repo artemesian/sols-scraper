@@ -36,5 +36,12 @@ export interface IProduct extends mongoose.Document {
   inventory: Array<{
     color: IColor;
     sizes: Array<ISizeInProduct>;
-  }>
+  }>;
+  history: Array<{
+    date: Date;
+    inventory: Array<{
+      color: IColor;
+      sizes: Array<ISizeInProduct>;
+    }>;
+  }>;
 }
