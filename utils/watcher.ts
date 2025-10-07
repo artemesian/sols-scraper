@@ -109,6 +109,9 @@ const saveData = async () => {
                 brand: item.brand,
                 format: item.format,
                 inventory: finalInventory,
+                history: {
+                    [new Date().toISOString()]: finalInventory
+                }
             });
             await product.save();
         } else {
@@ -116,6 +119,13 @@ const saveData = async () => {
             await product.updateOne({
                 $set: {
                     inventory: finalInventory,
+                    history: [
+                        ...product.history,
+                        {
+                            date: new Date(),
+                            inventory: finalInventory
+                        }
+                    ]
                 }
             });
         }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Quantity History Plots</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/d/d1/Favicon.ico.png" type="image/x-icon">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+  <style>
+    .chart-container {
+      margin-bottom: 40px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+        display: inline-block;
+        vertical-align: top;
+        width: 45%;
+
+    }
+    .toggle-button {
+      margin-bottom: 5px;
+        padding: 5px 10px;
+        background-color: #ff0000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+    }
+    #charts {
+      display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background-color: #eef2f7;
+        
+    }
+  </style>
+</head>
+<body>
+  <div id="charts"></div>
+  <script>
+    $(document).ready(function() {
+      $.get('/read', function(data) {
+        const product = data.message[0];
+        const history = product.history;
+
+        const sizes = new Set();
+        const colors = new Set();
+        history.forEach(record => {
+          record.inventory.forEach(inv => {
+            colors.add(inv.color.title);
+            inv.sizes.forEach(sz => sizes.add(sz.size.title));
+          });
+        });
+
+        // Prepare data structure for plotting
+        const sizeColorData = {};
+        for (const size of sizes) {
+          sizeColorData[size] = {};
+          for (const color of colors) {
+            sizeColorData[size][color] = [];
+          }
+        }
+
+        history.forEach(record => {
+          const date = record.date;
+          record.inventory.forEach(inv => {
+            const color = inv.color.title;
+            inv.sizes.forEach(sz => {
+              const size = sz.size.title;
+              sizeColorData[size][color].push({ x: new Date(date), y: sz.quantityAvailable });
+            });
+          });
+        });
+
+        const chartsDiv = $('#charts');
+        const chartInstances = [];
+
+        Array.from(sizes).forEach((size, index) => {
+          // Add container with toggle button and canvas
+          chartsDiv.append(`
+            <div class="chart-container" id="container-${index}">
+              <h3>Size: ${size}</h3>
+              <canvas id="chart-${index}" width="600" height="300"></canvas>
+              <button class="toggle-button" id="toggle-${index}">Hide All Colors</button>
+            </div>
+          `);
+
+          const datasets = [];
+          for (const color of colors) {
+            const dataPoints = sizeColorData[size][color];
+            if (dataPoints.length > 0) {
+              datasets.push({
+                label: color,
+                data: dataPoints,
+                borderColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
+                fill: false,
+                tension: 0.1,
+                pointRadius: 3,
+                hidden: false
+              });
+            }
+          }
+
+          const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+          const chart = new Chart(ctx, {
+            type: 'line',
+            data: { datasets },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: `Quantity Available Over Time - Size: ${size}`
+                },
+                legend: { position: 'bottom' }
+              },
+              scales: {
+                x: {
+                  type: 'time',
+                  time: { unit: 'day' },
+                  title: { display: true, text: 'Date' }
+                },
+                y: {
+                  beginAtZero: true,
+                  title: { display: true, text: 'Quantity Available' }
+                }
+              }
+            }
+          });
+
+          // Store chart instance for toggle button
+          chartInstances.push(chart);
+
+          // Attach button click handler
+          $(`#toggle-${index}`).click(function() {
+            const currentHidden = chart.data.datasets.every(ds => ds.hidden);
+            chart.data.datasets.forEach(ds => {
+              ds.hidden = !currentHidden; // Toggle all hidden/show
+            });
+            // Update button text accordingly
+            $(this).text(currentHidden ? 'Hide All Colors' : 'Show All Colors');
+            chart.update();
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
