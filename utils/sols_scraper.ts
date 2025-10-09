@@ -88,7 +88,7 @@ async function run(): Promise<InventoryItem[]> {
     width: 1920,
   };
 
-  const isLocalEnv =  process.env.IS_LOCAL == "false"
+  const isLocalEnv =  process.env.IS_LOCAL == "true"
 
   const browser = await puppeteer.launch({
     defaultViewport: viewport,
