@@ -91,6 +91,7 @@ async function run(): Promise<InventoryItem[]> {
   const isLocalEnv =  process.env.IS_LOCAL == "true"
 
   const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
     defaultViewport: viewport,
     executablePath: isLocalEnv
       ? process.env.PATH_TO_CHROMIUM
