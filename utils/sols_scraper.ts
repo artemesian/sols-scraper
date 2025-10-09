@@ -88,14 +88,14 @@ async function run(): Promise<InventoryItem[]> {
     width: 1920,
   };
 
-  const headlessType = Boolean(process.env.IS_LOCAL) ? false : "shell";
+  const isLocalEnv =  Boolean(process.env.IS_LOCAL)
 
   const browser = await puppeteer.launch({
     defaultViewport: viewport,
-    executablePath: process.env.IS_LOCAL
+    executablePath: isLocalEnv
       ? process.env.PATH_TO_CHROMIUM
       : await chromium.executablePath(),
-    headless: headlessType,
+    headless: isLocalEnv? false : "shell",
   });
 
   const page: any = await browser.newPage();
