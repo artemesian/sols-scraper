@@ -1,4 +1,6 @@
-import puppeteer from "puppeteer";
+require('dotenv').config();
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 
 async function clickAndWait(page: any, selector: string, navigationOptions: any = {}): Promise<void> {
   await Promise.all([
@@ -77,7 +79,25 @@ async function run(): Promise<InventoryItem[]> {
   const USER_EMAIL = "sadoscott25@gmail.com";
   const USER_PASSWORD = "Scotty-dev-camer@123";
 
-  const browser: any = await puppeteer.launch({ headless: false });
+  const viewport = {
+    deviceScaleFactor: 1,
+    hasTouch: false,
+    height: 1080,
+    isLandscape: true,
+    isMobile: false,
+    width: 1920,
+  };
+
+  const headlessType = Boolean(process.env.IS_LOCAL) ? false : "shell";
+
+  const browser = await puppeteer.launch({
+    defaultViewport: viewport,
+    executablePath: process.env.IS_LOCAL
+      ? process.env.PATH_TO_CHROMIUM
+      : await chromium.executablePath(),
+    headless: headlessType,
+  });
+
   const page: any = await browser.newPage();
 
   console.log("➡️ Navigation vers la page de login...");
