@@ -52,9 +52,12 @@ app.get("/read", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get("/watch", async (req: Request, res: Response, next: NextFunction) => {
-
+  // Schedule the task to run every 6 hours
+  // cron.schedule("0 */6 * * *", async () => {
+    // console.log("Running the scheduled task to save data...");
     await saveData();
-   
+    // console.log("Data saved successfully.");
+  // });
   res.status(200).json({
     message: "Sols data watcher started successfully🙂"
   });
@@ -67,4 +70,11 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   next(err);
 });
 
-export default () => connectDB().then(() => app);
+export default () => connectDB().then(() => {
+  cron.schedule("0 */6 * * *", async () => {
+    console.log("Running the scheduled task to save data...");
+    await saveData();
+    console.log("Data saved successfully.");
+  });
+  return app
+});
