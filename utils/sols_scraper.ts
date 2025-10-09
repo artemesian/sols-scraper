@@ -103,7 +103,9 @@ async function run(): Promise<InventoryItem[]> {
   await new Promise(res => setTimeout(res, 1000)); // Wait 1000 ms
   console.log("➡️ Navigation vers la page de login...");
   await page.goto("https://maze-erp.com/bed/software/app/mobile/command_login.php", { waitUntil: "networkidle2" });
-
+  console.log(await page.content());
+  await new Promise(res => setTimeout(res, 5000));
+  console.log(await page.content());
   console.log("➡️ Remplissage du formulaire de connexion...");
   await page.type('input[name="mail"]', USER_EMAIL);
   await page.type('input[name="pwd"]', USER_PASSWORD);
