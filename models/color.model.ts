@@ -1,5 +1,4 @@
 import mongoose, { Model, Schema } from "mongoose";
-import DiffPlugin from "mongoose-history-diff";
 import { IColor } from "../lib/interfaces";
 
 const ColorSchema: Schema<IColor> = new mongoose.Schema(
@@ -20,8 +19,6 @@ const ColorSchema: Schema<IColor> = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-ColorSchema.plugin(DiffPlugin);
 
 const ColorModel: Model<IColor> = mongoose.model(
   "Color",

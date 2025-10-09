@@ -7,7 +7,6 @@ import ProductFormatModel from "../models/productFormat.model";
 import ColorModel from "../models/color.model";
 import mongoose from "mongoose";
 import connectDB from "../utils/db";
-import { ISizeInProduct } from "../lib/interfaces";
 
 
 function adaptScrapedData(scrapedInventory: any, categoryName: string, brandName: string, formatName: string) {
