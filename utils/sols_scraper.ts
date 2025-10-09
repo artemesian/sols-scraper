@@ -91,7 +91,7 @@ async function run(): Promise<InventoryItem[]> {
   const isLocalEnv =  process.env.IS_LOCAL == "true"
 
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: isLocalEnv? ['--no-sandbox', '--disable-setuid-sandbox'] : chromium.args,
     defaultViewport: viewport,
     executablePath: isLocalEnv
       ? process.env.PATH_TO_CHROMIUM
@@ -100,7 +100,7 @@ async function run(): Promise<InventoryItem[]> {
   });
 
   const page: any = await browser.newPage();
-
+  await new Promise(res => setTimeout(res, 1000)); // Wait 1000 ms
   console.log("➡️ Navigation vers la page de login...");
   await page.goto("https://maze-erp.com/bed/software/app/mobile/command_login.php", { waitUntil: "networkidle2" });
 
